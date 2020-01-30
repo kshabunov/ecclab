@@ -2,8 +2,10 @@
 
 This is a new repo for the set of source files that I have been developing and used for
 error correcting code research with [Dr. Ilya Dumer](https://www.itsoc.org/profiles/ilyadumer) since 1998.
+The main area of the research was efficient decoding for Reed-Muller (RM) codes
+and their modifications.
 
-Initially they were mostly "research" and "proof of concept" quality for private use.
+Originally these were research programs for private use.
 Lately, we decided to revamp them, mostly for better readability, and put here for reference
 and future development. Currently, this is work in progress.
 
@@ -73,8 +75,16 @@ random_codeword on
 ml_lb off
 ```
 
-### `dtrm_glp_gc`
-Simulate recursive list decoding for RM/SubRM codes, AWGN channel.
+### `dtrm0_bg`
+Simulate recursive decoding for RM codes, AWGN channel. RM code is recursively decomposed
+down to (0, m) and (m, m) nodes.
+
+Specific simulation parameters:
+* `RM_m m` - RM m parameter. Integer, positive, non-zero. Required.
+* `RM_r r` - RM r parameter. Integer, positive, non-zero. Required.
+
+### `dtrm_glp_bg`
+Simulate recursive list decoding for RM codes and their subcodes (SubRM), AWGN channel.
 This algorithm was applied later to Polar codes with much success
 and now is known as Successive Cancellation List (SCL) decoding.
 For pure RM codes, we may also use up to mCr permutations.
@@ -117,7 +127,7 @@ permutations {
 ```
 
 ## References
-* I. Dumer, K. Shabunov, "Soft-decision decoding of ReedMuller codes: Recursive lists",
+* I. Dumer, K. Shabunov, "Soft-decision decoding of Reed-Muller codes: Recursive lists",
  IEEE Transactions On Information Theory, vol. 52, no. 3, March 2006. [IEEE Xplore](https://ieeexplore.ieee.org/document/1603792)
 * I. Dumer, K. Shabunov, "Recursive and permutation decoding for Reed-Muller codes",
  Proc. 2002 IEEE Int. Symp. Inform. Theory, pp. 146, 2002. [IEEE Xplore](https://ieeexplore.ieee.org/document/1023418)

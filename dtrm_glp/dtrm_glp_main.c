@@ -137,7 +137,6 @@ cdc_init(
       }
       if (strcmp(token, "border_node_lsize") == 0) {
          token = strtok(NULL, tk_seps_prepared);
-         // >>> Different list sizes at different nodes.
          dd->dc.peak_lsiz = atoi(token);
          token = strtok(NULL, tk_seps_prepared);
          continue;
