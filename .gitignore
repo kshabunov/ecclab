@@ -57,3 +57,7 @@ dkms.conf
 # Local project files
 .idea
 *.iml
+
+# Other
+.DS_Store
+*/.DS_Store
