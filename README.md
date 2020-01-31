@@ -2,12 +2,13 @@
 
 This is a new repo for the set of source files that I have been developing and used for
 error correcting code research with [Dr. Ilya Dumer](https://www.itsoc.org/profiles/ilyadumer) since 1998.
-The main area of the research was efficient decoding for Reed-Muller (RM) codes
-and their modifications.
-
-Originally these were research programs for private use.
-Lately, we decided to revamp them, mostly for better readability, and put here for reference
-and future development. Currently, this is work in progress.
+The main area of the research addressed efficient recursive decoding for Reed-Muller (RM) codes
+and their subcodes with frozen bits.
+ 
+Originally, these were research programs for private use. Lately, we decided to revamp them,
+mostly for a better readability. These programs can be used to run simulations of RM codes
+and their subcodes on the binary symmetric channels and AWGN channels.
+The programs can also be used for reference and developments. This work is in  progress.
 
 ## Build
 Run `make` in the project root directory. It will create `./build` subdirectory
