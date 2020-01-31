@@ -1,0 +1,22 @@
+% Include file with code parameters.
+include codes/rm/rm0204.txt
+
+% Results file.
+res_file results/bg_rm0204_dtrm_glp_P1_L2.srf
+
+% SNR values to simulate at.
+SNR_val_trn {
+   0      10000
+   0.5    10000
+   1      10000
+   1.5    10000
+   2      12000
+   2.5    20000
+   3      30000
+}
+
+random_codeword on
+
+ml_lb on
+
+border_node_lsize 2
