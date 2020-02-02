@@ -1,0 +1,8 @@
+% code_name "RM(2, 7)"
+
+RM_m 7
+RM_r 2
+
+border_node_mask 111111111111111111111
+
+par0_node_mask 11111111111111111111111111111

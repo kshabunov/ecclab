@@ -1,0 +1,10 @@
+% code_name "RM(2, 8)"
+
+code_n 256
+code_k 37
+
+RM_m 8
+RM_r 2
+
+% For dtrm_glp codec.
+border_node_mask 1111111111111111111111111111
