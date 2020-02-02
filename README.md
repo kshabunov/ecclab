@@ -34,6 +34,7 @@ These are plain text with the following structure:
 * Lines starting with `#` are considered to be comments and ignored.
 * Each parameter is a key/value pair separated by one or more spaces.
 * Parameter may have a group value surrounded by curly brackets (`{}`).
+* Any parameter not known to the program is ignored. 
 
 Parameter files may include other parameter files using `include some.file` directive.
 
@@ -75,6 +76,8 @@ SNR_val_trn {
 random_codeword on
 ml_lb off
 ```
+
+More examples may be found in the `./work` subdirectory.
 
 ### `dtrm0_bg`
 Simulate recursive decoding for RM codes, AWGN channel. RM code is recursively decomposed
