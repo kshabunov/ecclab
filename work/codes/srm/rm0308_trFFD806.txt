@@ -1,0 +1,7 @@
+% code_name "RM(3, 8, tr(FFD806))"
+
+RM_m 8
+RM_r 3
+
+% For dtrm_glp codec.
+border_node_mask 00000000001001111111100111111111111111111111111111111111
