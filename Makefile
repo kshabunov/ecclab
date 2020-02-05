@@ -1,5 +1,5 @@
 CC = gcc -O3
-BUILD_DIR = build
+BUILD_DIR = work
 
 .PHONY: all
 all: $(BUILD_DIR) $(BUILD_DIR)/dtrm0_bg $(BUILD_DIR)/dtrm_glp_bg
