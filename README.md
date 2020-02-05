@@ -11,8 +11,21 @@ and their subcodes on the binary symmetric channels and AWGN channels.
 The programs can also be used for reference and developments. This work is in  progress.
 
 ## Build
-Run `make` in the project root directory. It will create `./build` subdirectory
-(if it does not exist yet) and put executables there.
+
+The simulation programs are written in C.
+
+To build with `CMake` proceed as follows starting from the project root directory:
+```
+mkdir cmake-build-release
+cd cmake-build-release
+cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake --build . --target install
+```
+This will build the executables and copy them to the `work` subdirectory.
+
+To build with `make` run it in the project root directory.
+It will build executables to the `work` subdirectory.
+The provided makefile uses `gcc`, but it can be replaced with any other C compiler.
 
 ## Running programs
 
