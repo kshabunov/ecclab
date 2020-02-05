@@ -1,0 +1,28 @@
+% Include file with code parameters.
+include codes/srm/rm0308_trFFD806.txt
+
+% Results file.
+res_file results/bg_rm0308_trFFD806_dtrm_glp_L32.srf
+
+% SNR values to simulate at.
+SNR_val_trn {
+   0      20000
+   0.25   20000
+   0.5    20000
+   0.75   20000
+   1      20000
+   1.25   30000
+   1.5    50000
+   1.75   100000
+   2      200000
+   2.25   400000
+   2.5    800000
+   2.75   1500000
+   3      3000000
+}
+
+random_codeword on
+
+ml_lb on
+
+border_node_lsize 32

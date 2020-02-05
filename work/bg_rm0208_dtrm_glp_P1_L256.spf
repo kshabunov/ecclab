@@ -1,0 +1,24 @@
+% Include file with code parameters.
+include codes/rm/rm0208.txt
+
+% Results file.
+res_file results/bg_rm0208_dtrm_glp_P1_L256.srf
+
+% SNR values to simulate at.
+SNR_val_trn {
+   1      50000
+   1.25   50000
+   1.5    50000
+   1.75   50000
+   2      100000
+   2.25   200000
+   2.5    400000
+   2.75   1000000
+   3      3000000
+}
+
+random_codeword on
+
+ml_lb on
+
+border_node_lsize 256
