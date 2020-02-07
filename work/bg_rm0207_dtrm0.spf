@@ -1,0 +1,24 @@
+% Include file with code parameters.
+include codes/rm/rm0207.txt
+
+% Results file.
+res_file results/bg_rm0207_dtrm0.srf
+
+% SNR values to simulate at.
+SNR_val_trn {
+   0      10000
+   0.5    10000
+   1      10000
+   1.5    10000
+   2      10000
+   2.5    10000
+   3      10000
+   3.5    10000
+   4      20000
+   4.5    50000
+   5      100000
+}
+
+random_codeword on
+
+ml_lb off

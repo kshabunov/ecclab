@@ -100,6 +100,14 @@ Specific simulation parameters:
 * `RM_m m` - RM m parameter. Integer, positive, non-zero. Required.
 * `RM_r r` - RM r parameter. Integer, positive, non-zero. Required.
 
+### `dtrm1_bg`
+Simulate recursive decoding for RM codes, AWGN channel. RM code is recursively decomposed
+down to (1, m) and (m, m) nodes. First order nodes are decoded with a fast ML decoder.
+
+Specific simulation parameters:
+* `RM_m m` - RM m parameter. Integer, positive, non-zero. Required.
+* `RM_r r` - RM r parameter. Integer, positive, non-zero. Required.
+
 ### `dtrm_glp_bg`
 Simulate recursive list decoding for RM codes and their subcodes (SubRM), AWGN channel.
 This algorithm was applied later to Polar codes with much success

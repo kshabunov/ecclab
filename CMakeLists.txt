@@ -7,7 +7,10 @@ set(SIM_SRM_BG common/srm_utils.c ${SIM_BG})
 add_executable(dtrm0_bg dtrm/dtrm0.c ${SIM_SRM_BG})
 target_compile_options(dtrm0_bg PUBLIC -DDEC_NEEDS_SIGMA -DUSE_STDLIB_RND)
 
+add_executable(dtrm1_bg dtrm/dtrm1.c rm1_ml/rm1_ml.c ${SIM_SRM_BG})
+target_compile_options(dtrm1_bg PUBLIC -DDEC_NEEDS_SIGMA -DUSE_STDLIB_RND)
+
 add_executable(dtrm_glp_bg dtrm_glp/dtrm_glp_main.c dtrm_glp/dtrm_glp_inner.c ${SIM_SRM_BG})
 target_compile_options(dtrm_glp_bg PUBLIC -DDEC_NEEDS_SIGMA -DDEC_NEEDS_CSNRN -DUSE_STDLIB_RND)
 
-INSTALL(TARGETS dtrm0_bg dtrm_glp_bg DESTINATION ${CMAKE_SOURCE_DIR}/work)
+INSTALL(TARGETS dtrm0_bg dtrm1_bg dtrm_glp_bg DESTINATION ${CMAKE_SOURCE_DIR}/work)
