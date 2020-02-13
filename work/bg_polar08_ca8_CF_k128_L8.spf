@@ -1,0 +1,21 @@
+include codes/polar/polar08_ca8_CF_k128.txt
+
+% Results file.
+res_file results/bg_polar08_ca8_CF_k128_L8.srf
+
+% SNR values to simulate at.
+SNR_val_trn {
+   0      10000
+   0.5    10000
+   1      10000
+   1.5    10000
+   2      20000
+   2.5    100000
+   3      500000
+}
+
+random_codeword on
+
+ml_lb on
+
+list_size 8

@@ -117,14 +117,14 @@ For pure RM codes, we may also use up to mCr permutations.
 Specific simulation parameters:
 * `RM_m m` - RM m parameter. Integer, positive, non-zero. Required.
 * `RM_r r` - RM r parameter. Integer, positive, non-zero. Required.
-* `order_node_mask mask_str` - mask marking border nodes that should be set as zeroes
+* `border_node_mask mask_str` - mask marking border nodes that should be set as zeroes
  thus specifying the RM subcode (see explanation below). Binary string. Required.
 * `border_node_lsize L` - list size. Integer, positive, non-zero. Required.
 * `permutations {...}` - permutations set. Group value, each line
  defines one permutation (see example below). No additional permutations,
  except (0 1 2 ...), are used by default.
 
-`order_node_mask mask_str` is a binary string
+`border_node_mask mask_str` is a binary string
 with each bit symbol corresponding to a single (0, m) or (m, m) node on the border of
 the RM code decomposition triangle. The order of the bits is the order by which the recursive
 decoder visits these nodes. If the bit is set as `0` the corresponding node is excluded.
@@ -150,6 +150,20 @@ permutations {
   0 1 2 3
 }
 ```
+
+### `ca_polar_scl_bg`
+Simulate Successive Cancellation List (SCL) decoding for CRC-aided (CA) Polar codes, AWGN channel.
+This is `dtrm_glp` codec tailored for Polar codes. The difference is that we start only from (m, m) nodes
+and decompose everything down to (0, 0) nodes. When no CRC is given, the decoder outputs the remaining candidate
+with the best metric as `dtrm_glp` would do. When CRC is set, the decoder picks the best candidate with the correct CRC.
+
+Specific simulation parameters:
+* `c_m m` - Polar m parameter. Integer, positive, non-zero. Required.
+* `info_bits_mask mask_str` - mask marking frozen information bits
+ in the same way as `border_node_mask` marks zeroed border nodes for `dtrm_glp`. Binary string. Required.
+* `ca_polar_crc poly_str` - coefficients of the CRC polynomial starting from higher powers, no leading 1.
+Binary string. No CRC is used by default.
+* `list_size L` - list size. Integer, positive, non-zero. Required.
 
 ## References
 * I. Dumer, K. Shabunov, "Soft-decision decoding of Reed-Muller codes: Recursive lists",
