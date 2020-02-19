@@ -255,7 +255,7 @@ cdc_init(
       if (strcmp(token, "ca_polar_crc") == 0) {
          token = strtok(NULL, tk_seps_prepared);
          dd->crc_len = strlen(token);
-         dd->crc = (int *)malloc(dd->dc.node_table_len * sizeof(int));
+         dd->crc = (int *)malloc(dd->crc_len * sizeof(int));
          if (dd->crc == NULL) {
             err_msg("cdc_init: Short of memory.");
             goto ret_err;
