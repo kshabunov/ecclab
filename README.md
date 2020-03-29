@@ -166,6 +166,8 @@ Binary string. No CRC is used by default.
 * `list_size L` - list size. Integer, positive, non-zero. Required.
 
 ## References
+* E. Arikan, “Channel Polarization: A Method for Constructing Capacity-Achieving Codes for Symmetric Binary-Input Memoryless Channels,”
+ IEEE Transactions on Information Theory, vol. 55, no. 7, July 2009. [IEEE Xplore](https://ieeexplore.ieee.org/document/5075875)
 * I. Dumer, K. Shabunov, "Soft-decision decoding of Reed-Muller codes: Recursive lists",
  IEEE Transactions On Information Theory, vol. 52, no. 3, March 2006. [IEEE Xplore](https://ieeexplore.ieee.org/document/1603792)
 * I. Dumer, K. Shabunov, "Recursive and permutation decoding for Reed-Muller codes",
@@ -174,3 +176,5 @@ Binary string. No CRC is used by default.
  2001 IEEE Intern. Symp. Info. Theory, pp. 329, June 24–29, 2001. [IEEE Xplore](https://ieeexplore.ieee.org/document/936192/)
 * I. Dumer, K. Shabunov, "Recursive decoding of Reed-Muller codes",
  Proc. 2000 IEEE Int. Symp. Inform. Theory, pp. 63, 2000. [IEEE Xplore](https://ieeexplore.ieee.org/document/866353)
+* I. Tal and A. Vardy, “List Decoding of Polar Codes,”
+ IEEE Transactions on Information Theory, vol. 61, no. 5, May 2015. [IEEE Xplore](https://ieeexplore.ieee.org/document/7055304)
