@@ -31,6 +31,7 @@
 //#include "format_gm1.h"
 //#include "format_gm2.h"
 //#include "format_gm3.h"
+
 //#include "format_eps1.h" // eps, exact.
 //#include "format_eps2.h"
 //#include "format_eps3.h"
@@ -43,17 +44,19 @@
 //#include "format_eps6b.h"
 //#include "format_eps7.h"
 //#include "format_eps8.h"
-//#include "format_rho1.h" // rho, exact.
+
+//#include "format_rho1.h" // LLR, exact.
 //#include "format_rho2.h"
 //#include "format_rho3.h"
 //#include "format_rho3h.h"
 //#include "format_rho4.h"
-//#include "format_rho5.h" // rho, min/sum.
+//#include "format_rho5.h" // LLR, min/sum.
 //#include "format_rho6.h"
 //#include "format_rho6a.h"
 //#include "format_rho7.h"
 //#include "format_rho7a.h"
 //#include "format_rho8.h" // rho, exact, clipping.
+
 //#include "format_q2.h"
 
 #ifdef FORMAT_GAMMA
