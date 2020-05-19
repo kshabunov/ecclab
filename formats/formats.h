@@ -152,6 +152,23 @@
 }
 #endif // if FORMAT_Q2
 
+// Higher level macros.
+
+#define VXOR_EST(yp1, yp2, yp3, n) { \
+   register int i; \
+   for (i = 0; i < n; i++) yp3[i] = XOR_EST(yp1[i], yp2[i]); \
+}
+
+#define VADD_EST(yp1, yp2, yp3, n) { \
+   register int i; \
+   for (i = 0; i < n; i++) ADD_EST(yp1[i], yp2[i], yp3[i]); \
+}
+
+#define VADD_INV_EST(yp1, yp2, yp3, n) { \
+   register int i; \
+   for (i = 0; i < n; i++) ADD_EST(INV_EST(yp1[i]), yp2[i], yp3[i]); \
+}
+
 //-----------------------------------------------------------------------------
 // Typedefs.
 
