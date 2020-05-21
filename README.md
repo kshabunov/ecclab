@@ -27,7 +27,7 @@ To build with `make` run it in the project root directory.
 It will build executables to the `work` subdirectory.
 The provided makefile uses `gcc`, but it can be replaced with any other C compiler.
 
-## Running programs
+## Running
 
 ### Typical usage
 
@@ -164,6 +164,17 @@ Specific simulation parameters:
 * `ca_polar_crc poly_str` - coefficients of the CRC polynomial starting from higher powers, no leading 1.
 Binary string. No CRC is used by default.
 * `list_size L` - list size. Integer, positive, non-zero. Required.
+
+## Implementation details
+
+### Internal reliability representation formats
+
+While doing the research we tried several internal representation formats for symbol reliability values.
+In order to be able to switch between different representations a system of macros was developed.
+
+The related source code is located in the `formats` subdirectory.
+There is the top level include file `formats.h` and a number of `format_*.h` sub-include files
+specific for each representation.
 
 ## References
 * E. Arikan, “Channel Polarization: A Method for Constructing Capacity-Achieving Codes for Symmetric Binary-Input Memoryless Channels,”
