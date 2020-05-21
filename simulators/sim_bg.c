@@ -102,11 +102,11 @@ char fixedR_token[] = "fixed_R";
 //-----------------------------------------------------------------------------
 // Functions.
 
-double db2val(double x) {
+static double db2val(double x) {
    return exp(log(10.0) * x / 10.0);
 }
 
-void set_rnd_seed(long s) {
+static void set_rnd_seed(long s) {
 #ifdef USE_STDLIB_RND
    srand((unsigned)s);
 #else
@@ -115,7 +115,7 @@ void set_rnd_seed(long s) {
 }
 
 /* Pauses for a specified number of milliseconds. */
-void sleep( clock_t wait )
+static void sleep( clock_t wait )
 {
    clock_t goal;
    goal = wait + clock();
@@ -123,31 +123,9 @@ void sleep( clock_t wait )
       ;
 }
 
-// Add Gaussian noise.
-void add_noise(
-   double y[],
-   int n, // Length of y[] (must be even!).
-   double sg // Standard deviation (sigma).
-)
-{
-   double v1, v2, r;
-   int i = 0;
-
-   while (i < n) {
-      do {
-         v1 = 2.0 * RND - 1.0;
-         v2 = 2.0 * RND - 1.0;
-         r = v1 * v1 + v2 * v2;
-      } while (r >= 1.0);
-      r = sqrt((-2.0 * log(r)) / r);
-      y[i++] += v1 * r * sg;
-      y[i++] += v2 * r * sg;
-   }
-}
-
-// Copy and add Gaussian noise.
-void copy_add_noise(
-   double ys[],
+// Copy and add Gaussian noise using Marsaglia polar method.
+static void copy_add_noise(
+   double const ys[],
    int n, // Length of y[] (must be even!).
    double sg, // Standard deviation (sigma).
    double yd[]
