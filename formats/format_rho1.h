@@ -31,7 +31,7 @@
 #define YLDEC0 1.0
 #define YLDEC1 (-1.0)
 
-#define RHO1LOGP0(e) ((e) - log(1.0 + exp(e)))
+#define RHO1LOGP0(e) (-log(1.0 + exp(-(e))))
 #define RHO1LOGP1(e) (-log(1.0 + exp(e)))
 
 // True if estimate votes for 0.
