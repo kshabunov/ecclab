@@ -184,8 +184,15 @@ void print_list(char rem[]) {
 
 #define SWAP(a, b) { tmp = v[a]; v[a] = v[b]; v[b] = tmp; }
 
-void qpartition(int *v, int len, int k) {
+static void qpartition(int *v, int len, int k) {
   int i, st, tmp;
+
+  if (k == len - 1) return;
+
+  if (len == 2) {
+    if (slist[v[0]] < slist[v[1]]) SWAP(0, 1)
+    return;
+  }
 
   for (st = i = 0; i < len - 1; i++) {
     if (slist[v[i]] < slist[v[len - 1]]) continue;
