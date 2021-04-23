@@ -1,26 +1,35 @@
-% Include file with code parameters.
+% Code parameters.
 include codes/rm/rm0208.txt
+
+% Decoder settings
+border_node_lsize 256
+include codes/rm/rm0208_PmCr.txt
 
 % Results file.
 res_file results/bg_rm0208_dtrm_glp_PmCr_L256.srf
 
 % SNR values to simulate at.
 SNR_val_trn {
+  -1      20000
+  -0.75   20000
+  -0.5    20000
+  -0.25   20000
+   0      50000
+   0.25   50000
+   0.5    50000
+   0.75   50000
    1      50000
    1.25   50000
    1.5    50000
-   1.75   50000
-   2      100000
-   2.25   200000
-   2.5    400000
-   2.75   1000000
-   3      3000000
+   1.75   100000
+   2      200000
+   2.25   400000
+   2.5    1200000
+   2.75   3000000
 }
 
+% Use random codeword for simulation (on/off).
 random_codeword on
 
+% Calculate ML lower bound (on/off).
 ml_lb on
-
-border_node_lsize 256
-
-include codes/rm/rm0208_PmCr.txt

@@ -1,4 +1,8 @@
+% Code parameters.
 include codes/polar/polar08_ca8_CF_k128.txt
+
+% Decoder settings
+list_size 8
 
 % Results file.
 res_file results/bg_polar08_ca8_CF_k128_L8.srf
@@ -14,8 +18,9 @@ SNR_val_trn {
    3      500000
 }
 
+% Use random codeword for simulation (on/off).
 random_codeword on
 
+% Calculate ML lower bound (on/off).
 ml_lb on
 
-list_size 8

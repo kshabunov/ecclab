@@ -1,4 +1,4 @@
-% Include file with code parameters.
+% Code parameters.
 include codes/rm/rm0204.txt
 
 % Results file.
@@ -15,6 +15,8 @@ SNR_val_trn {
    3      20000
 }
 
+% Use random codeword for simulation (on/off).
 random_codeword on
 
+% Calculate ML lower bound (on/off).
 ml_lb on

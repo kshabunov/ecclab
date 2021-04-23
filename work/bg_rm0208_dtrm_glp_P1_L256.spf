@@ -1,11 +1,22 @@
-% Include file with code parameters.
+% Code parameters.
 include codes/rm/rm0208.txt
+
+% Decoder settings
+border_node_lsize 256
 
 % Results file.
 res_file results/bg_rm0208_dtrm_glp_P1_L256.srf
 
 % SNR values to simulate at.
 SNR_val_trn {
+  -1      20000
+  -0.75   20000
+  -0.5    20000
+  -0.25   20000
+   0      50000
+   0.25   50000
+   0.5    50000
+   0.75   50000
    1      50000
    1.25   50000
    1.5    50000
@@ -17,8 +28,8 @@ SNR_val_trn {
    3      3000000
 }
 
+% Use random codeword for simulation (on/off).
 random_codeword on
 
+% Calculate ML lower bound (on/off).
 ml_lb on
-
-border_node_lsize 256

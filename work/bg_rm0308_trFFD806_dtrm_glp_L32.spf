@@ -1,5 +1,8 @@
-% Include file with code parameters.
+% Code parameters.
 include codes/srm/rm0308_trFFD806.txt
+
+% Decoder settings
+border_node_lsize 32
 
 % Results file.
 res_file results/bg_rm0308_trFFD806_dtrm_glp_L32.srf
@@ -21,8 +24,9 @@ SNR_val_trn {
    3      3000000
 }
 
+% Use random codeword for simulation (on/off).
 random_codeword on
 
+% Calculate ML lower bound (on/off).
 ml_lb on
 
-border_node_lsize 32
