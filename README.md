@@ -136,10 +136,19 @@ border_node_mask 011111
 This results in a subcode of RM(2, 4) with k = 10.
 
 `permutations` is a group parameter. Each line consists of m integers from 0 to m - 1 separated
-by spaces. They specify the order of the boolean polynomial variables that define
-the codewords (relative to the original order). We can use the permutations that put any r variables
-to the last r positions because they result in permutations of the information symbols.
-For example, here are all 6 possible permutations for RM(2, 4):
+by spaces. They specify a permutation of the m variables
+(relative to the original order "0 1 ... m - 1") used in the boolean polynomials
+that define the code.
+Each permutation of these variables corresponds to
+certain permutations of codeword and information symbols.
+Further explanations you can find in, for example, chapter 13.9
+of the classical MacWilliams and Sloane book.
+
+The program works with any permutation set.
+We got good results for m = 7–10 with the set of mCr permutations that put any r variables
+out of m to the last r positions.
+For example, here are all 6 possible permutations that put any 2 out of 4 variables
+to the last 2 positions for RM(2, 4):
 ```
 permutations {
   2 3 0 1
@@ -187,5 +196,6 @@ specific for each representation.
  2001 IEEE Intern. Symp. Info. Theory, pp. 329, June 24–29, 2001. [IEEE Xplore](https://ieeexplore.ieee.org/document/936192/)
 * I. Dumer, K. Shabunov, "Recursive decoding of Reed-Muller codes",
  Proc. 2000 IEEE Int. Symp. Inform. Theory, pp. 63, 2000. [IEEE Xplore](https://ieeexplore.ieee.org/document/866353)
-* I. Tal and A. Vardy, “List Decoding of Polar Codes,”
+* F.J. MacWilliams and N.J.A. Sloane, "The Theory of Error-Correcting Codes", Elsevier Science. [Amazon](https://www.amazon.com/dp/0444851933/)
+* I. Tal and A. Vardy, "List Decoding of Polar Codes",
  IEEE Transactions on Information Theory, vol. 61, no. 5, May 2015. [IEEE Xplore](https://ieeexplore.ieee.org/document/7055304)
