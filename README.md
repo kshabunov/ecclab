@@ -112,7 +112,7 @@ Specific simulation parameters:
 Simulate recursive list decoding for RM codes and their subcodes (SubRM), AWGN channel.
 This algorithm was applied later to Polar codes with much success
 and now is known as Successive Cancellation List (SCL) decoding.
-For pure RM codes, we may also use up to mCr permutations.
+For pure RM codes, we may also use up to m! permutations.
 
 Specific simulation parameters:
 * `RM_m m` - RM m parameter. Integer, positive, non-zero. Required.
