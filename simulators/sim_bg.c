@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "../common/std_defs.h"
 #include "../common/spf_par.h"
 #include "../interfaces/simul.h"
 #include "../interfaces/codec.h"
@@ -42,6 +43,12 @@
 
 // Max # of SNR values.
 #define SNR_NUM_MAX        50
+
+#define MAX_TRIALS_PER_SNR 1e10
+
+// Minimum number of observed block errors to estimate required number of trials.
+#define MIN_EN_FOR_TRN_ESTIMATION 20
+
 // Max length of file names.
 #define FN_LEN_MAX         1000
 
@@ -72,6 +79,8 @@ typedef struct {
   int snr_num;
   int csnrn;
   double snr_db[SNR_NUM_MAX];
+  int min_trn;
+  int min_en_bl;
   int trn_req[SNR_NUM_MAX];
   int trn[SNR_NUM_MAX];
   int trn_saved[SNR_NUM_MAX];
@@ -161,7 +170,7 @@ int sim_init(
   // Allocate simulator instance.
   sim = (sim_bg_inst *)malloc(sizeof(sim_bg_inst));
   if (sim == NULL) {
-    err_msg("sim_init(): short of memory!");
+    err_msg("sim_bg init error: short of memory!");
     return 1;
   }
   memset(sim, 0, sizeof(sim_bg_inst));
@@ -169,7 +178,7 @@ int sim_init(
   // Allocate temporary string for parsing.
   str1 = (char *)malloc(SP_STR_MAX);
   if (str1 == NULL) {
-    err_msg("sim_init(): short of memory!");
+    err_msg("sim_bg init error: short of memory!");
     return 1;
   }
   str1[0] = 0;
@@ -182,33 +191,40 @@ int sim_init(
     if (strcmp(token, res_file_token) == 0) {
       token = strtok(NULL, tk_seps_prepared);
       if (strlen(token) >= FN_LEN_MAX) {
-        err_msg("sim_init(): Output file name is too long.");
+        err_msg("sim_bg init error: output file name is too long.");
         return 1;
       }
       strcpy(sim->rf_name, token);
       token = strtok(NULL, tk_seps_prepared);
       continue;
     }
-    if (strcmp(token, snr_val_trn_token) == 0) {
-      int i = 0;
-      token = strtok(NULL, tk_seps_prepared);
-      if (token[0] == GROUP_CHAR_BEGIN) {
+    if (sim->snr_num < 1) {
+      if (strcmp(token, snr_val_trn_token) == 0) {
+        int i = 0;
         token = strtok(NULL, tk_seps_prepared);
-        while ((token[0] != GROUP_CHAR_END) && (i < SNR_NUM_MAX)) {
-          sim->snr_db[i] = atof(token);
+        if (token[0] == GROUP_CHAR_BEGIN) {
           token = strtok(NULL, tk_seps_prepared);
-          sim->trn_req[i++] = atoi(token);
-          token = strtok(NULL, tk_seps_prepared);
+          while ((token[0] != GROUP_CHAR_END) && (i < SNR_NUM_MAX)) {
+            sim->snr_db[i] = atof(token);
+            token = strtok(NULL, tk_seps_prepared);
+            sim->trn_req[i++] = atoi(token);
+            token = strtok(NULL, tk_seps_prepared);
+          }
         }
+        else {
+          err_msg("sim_bg init error: cannot read SNR_val_trn.");
+          return 1;
+        }
+        sim->snr_num = i;
+        token = strtok(NULL, tk_seps_prepared);
+        continue;
       }
-      else {
-        err_msg("sim_init(): Error in parameters file: can't read SNR_val_trn.");
-        return 1;
-      }
-      sim->snr_num = i;
-      token = strtok(NULL, tk_seps_prepared);
-      continue;
     }
+    if (sim->snr_num < 1) {
+      TRYGET_GRDOUBLE_TOKEN(token, "EbNo_values", sim->snr_db, sim->snr_num, SNR_NUM_MAX, "sim_bg init error: too many Eb/No values!");
+    }
+    TRYGET_INT_TOKEN(token, "min_trials_per_snr", sim->min_trn);
+    TRYGET_INT_TOKEN(token, "min_errors_per_snr", sim->min_en_bl);
     TRYGET_ONOFF_TOKEN(token, ml_lb_token, sim->do_ml);
     TRYGET_ONOFF_TOKEN(token, random_codeword_token, sim->use_rndcw);
     TRYGET_ONOFF_TOKEN(token, "ml_lb_hard", sim->do_ml_hd);
@@ -220,7 +236,7 @@ int sim_init(
   // Init codec.
   strcpy(str1, sp_str);
   if (cdc_init(str1, &(sim->dc_inst))) {
-    err_msg("Cannot init codec.");
+    err_msg("sim_bg init error: cannot init codec.");
     return 1;
   }
 
@@ -228,12 +244,27 @@ int sim_init(
   sim->code_k = cdc_get_k(sim->dc_inst);
 
   // Check if all necessary parameters are specified.
+  if (sim->snr_num < 1) {
+    err_msg("sim_bg init error: no SNR values are specified.");
+    return 1;
+  }
+  if (sim->min_trn <= 0) {
+    sim->min_trn = 1;
+  }
+  if (sim->min_en_bl <= 0) {
+    sim->min_en_bl = 1;
+  }
   if ((sim->code_n == 0) || (sim->code_k == 0)) {
-    err_msg("sim_init: code_n or code_k are not specified.");
+    err_msg("sim_bg init error: code_n or code_k are not specified.");
     return 1;
   }
 
   // Assign other settings and init counters in the simulation instance.
+  for (int i = 0; i < sim->snr_num; i++) {
+    if (sim->trn_req[i] < 1) {
+      sim->trn_req[i] = sim->min_trn;
+    }
+  }
   sim->csnrn = 0;
   sim->ret_int = sp->ret_int;
   if (sp->dont_randomize == 0) set_rnd_seed((int)time(NULL));
@@ -256,6 +287,24 @@ void sim_close(
   sim = (sim_bg_inst *)inst;
   cdc_close(sim->dc_inst);
   free(sim);
+}
+
+static void update_trn_req(
+  sim_bg_inst *sim,
+  int csnrn
+) {
+  if (sim->en_bl[csnrn] < sim->min_en_bl) {
+    double estimate;
+    if (sim->en_bl[csnrn] > MIN_EN_FOR_TRN_ESTIMATION) {
+      estimate = (double)sim->trn[csnrn] * sim->min_en_bl / sim->en_bl[csnrn];
+      sim->trn_req[csnrn] = (int)MAX(sim->min_trn, MIN(estimate + 0.5, MAX_TRIALS_PER_SNR));
+      return;
+    }
+    if (sim->trn[csnrn] > sim->trn_req[csnrn] / 2) {
+      estimate = sim->trn[csnrn] * 1.5;
+      sim->trn_req[csnrn] = (int)MIN(estimate + 0.5, MAX_TRIALS_PER_SNR);
+    }
+  }
 }
 
 // Main simulation cycle routine.
@@ -293,7 +342,7 @@ int sim_run(
   c_in = (double *)malloc(c_n * sizeof(double));
   c_out = (double *)malloc(c_n * sizeof(double));
   if ((x == NULL) || (x_dec == NULL) || (c_in == NULL) || (c_out == NULL)) {
-    err_msg("sim_run(): Short of memory.");
+    err_msg("sim_bg run error: short of memory.");
     return -1;
   }
 
@@ -333,7 +382,7 @@ int sim_run(
 
       // Decode.
       if (dec_bpsk(sim->dc_inst, c_out, x_dec)) {
-        err_msg("sim_run(): Error while decoding.");
+        err_msg("sim_bg run error: error while decoding.");
         return -1;
       }
 
@@ -358,6 +407,8 @@ int sim_run(
         for (i = 0; i < c_n; i++) d2 += (c_in[i] - c_out[i]) * (c_in[i] - c_out[i]);
         if (d1 > d2) sim->enml_bl[csnrn]++;
       }
+
+      update_trn_req(sim, csnrn);
 
       // Check elapsed time.
       if (time(NULL) - start_time > sim->ret_int) {
@@ -480,7 +531,7 @@ sim_save_res(
   while ((fp = fopen(bsyfn, "r")) != NULL) {
     fclose(fp);
     if (n++ > 30) {
-      err_msg("sim_save_res(): Output file is busy too long.");
+      err_msg("sim_bg saving error: output file is busy too long.");
       return 1;
     }
     sleep(1000);
@@ -488,7 +539,7 @@ sim_save_res(
 
   // Create the busy flag.
   if ((fp = fopen(bsyfn, "w")) == NULL) {
-    err_msg("sim_save_res(): Cannot create busy flag file.");
+    err_msg("sim_bg saving error: cannot create busy flag file.");
     return 1;
   }
   fprintf(fp, "Busy");
@@ -504,22 +555,22 @@ sim_save_res(
       // TRYGET_INT_TOKEN(token, code_k_token, code_k);
       TRYGET_GRDOUBLE_TOKEN(
         token, SNR_token, snr_db, snr_num, SNR_NUM_MAX,
-        "Error in old res file.");
+        "sim_bg saving error: invalid value in the old res file.");
       TRYGET_GRINT_TOKEN(
         token, tr_num_token, trn, trn_n, SNR_NUM_MAX,
-        "Error in old res file.");
+        "sim_bg saving error: invalid value in the old res file.");
       TRYGET_GRINT_TOKEN(
         token, en_bit_token, en_bit, en_bit_n, SNR_NUM_MAX,
-        "Error in old res file.");
+        "sim_bg saving error: invalid value in the old res file.");
       TRYGET_GRINT_TOKEN(
         token, en_bl_token, en_bl, en_bl_n, SNR_NUM_MAX,
-        "Error in old res file.");
+        "sim_bg saving error: invalid value in the old res file.");
       TRYGET_GRINT_TOKEN(
         token, ml_tr_num_token, ml_trn, ml_trn_n, SNR_NUM_MAX,
-        "Error in old res file.");
+        "sim_bg saving error: invalid value in the old res file.");
       TRYGET_GRINT_TOKEN(
         token, enml_bl_token, enml_bl, enml_bl_n, SNR_NUM_MAX,
-        "Error in old res file.");
+        "sim_bg saving error: invalid value in the old res file.");
       SPF_SKIP_UNKNOWN_PARAMETER(token);
     }
     free(str1);
@@ -527,7 +578,7 @@ sim_save_res(
     // Check validity of the data.
     if ((snr_num != trn_n) || (en_bit_n != trn_n) || (en_bl_n != trn_n)
         || (enml_bl_n != trn_n) || (ml_trn_n != trn_n)) {
-      err_msg("sim_save_res(): Invalid old res file.");
+      err_msg("sim_bg saving error: invalid old res file.");
       return 1;
     }
 
@@ -600,7 +651,7 @@ sim_save_res(
 
   fp = fopen(sim->rf_name, "wt");
   if (fp == NULL) {
-    err_msg("sim_save_res(): Cannot open file to save results.");
+    err_msg("sim_bg saving error: cannot open file to save results.");
     return 1;
   }
 
@@ -622,12 +673,20 @@ sim_save_res(
   for (n = 0; n < snrs_to_save; n++) fprintf(fp, "%d ", en_bl[n]);
   fprintf(fp, "}\n");
 
+  fprintf(fp, "WER { ");
+  for (n = 0; n < snrs_to_save; n++) fprintf(fp, "%.3e ", (double)(en_bl[n]) / trn[n]);
+  fprintf(fp, "}\n");
+
   fprintf(fp, "ml_tr_num { ");
   for (n = 0; n < snrs_to_save; n++) fprintf(fp, "%d ", ml_trn[n]);
   fprintf(fp, "}\n");
 
   fprintf(fp, "enml_bl { ");
   for (n = 0; n < snrs_to_save; n++) fprintf(fp, "%d ", enml_bl[n]);
+  fprintf(fp, "}\n");
+
+  fprintf(fp, "MLER { ");
+  for (n = 0; n < snrs_to_save; n++) fprintf(fp, "%.3e ", (ml_trn[n]) ? (double)(enml_bl[n]) / ml_trn[n] : 0.0);
   fprintf(fp, "}\n");
 
   fprintf(fp, "\n");

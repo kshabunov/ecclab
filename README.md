@@ -4,17 +4,19 @@ This is a new repo for the set of source files that I have been developing and u
 error correcting code research with [Dr. Ilya Dumer](https://www.itsoc.org/profiles/ilyadumer) since 1998.
 The main area of the research addressed efficient recursive decoding for Reed-Muller (RM) codes
 and their subcodes with frozen bits.
- 
 Originally, these were research programs for private use. Lately, we decided to revamp them,
-mostly for a better readability. These programs can be used to run simulations of RM codes
-and their subcodes on the binary symmetric channels and AWGN channels.
-The programs can also be used for reference and developments. This work is in  progress.
+mostly for a better readability, and make them available as an open source project.
+
+These programs can be used to run simulations of RM codes and their subcodes,
+Polar codes and CA-Polar codes on the binary symmetric channels and AWGN channels.
+The programs can also be used for reference and developments.
+This is a set of tools for research work in progress, no formal releases are planned so far.
 
 ## Build
 
 The simulation programs are written in C.
 
-To build with `CMake` proceed as follows starting from the project root directory:
+To build from command line with `CMake`proceed as follows starting from the project root directory:
 ```
 mkdir cmake-build-release
 cd cmake-build-release
@@ -23,7 +25,7 @@ cmake --build . --target install
 ```
 This will build the executables and copy them to the `work` subdirectory.
 
-To build with `make` run it in the project root directory.
+To build from command line with `make` run it in the project root directory.
 It will build executables to the `work` subdirectory.
 The provided makefile uses `gcc`, but it can be replaced with any other C compiler.
 
@@ -36,7 +38,7 @@ The simulation programs are run from the command line:
 executable simulation_parameters_file [options]
 ```
 Common options are:
-* `-nr` - don't randomize.
+* `-nr` - don't randomize the pseudorandom number generator (useful for debugging).
 * `-si` - set saving interval in seconds.
 * `-ri` - set return (status update) interval in seconds.
 
@@ -47,9 +49,10 @@ These are plain text with the following structure:
 * Lines starting with `#` are considered to be comments and ignored.
 * Each parameter is a key/value pair separated by one or more spaces.
 * Parameter may have a group value surrounded by curly brackets (`{}`).
-* Any parameter not known to the program is ignored. 
+* Any parameter with unknown key is ignored. 
 
 Parameter files may include other parameter files using `include some.file` directive.
+The include path is considered to be relative to the current directory.
 
 For example:
 ```
@@ -72,19 +75,34 @@ group_param {
 ### Common simulation parameters
 
 * `res_file filename` - file for saving simulation results. String. Required.
-* `SNR_val_trn {...}` - SNR values to simulate at. Group value,
- each item contains SNR value and the number of trials (see an example below). Required.
+* `SNR_val_trn {...}` - Eb/No SNR values with required number of trials. Group value,
+ each item contains an SNR value and the number of trials that should be simulated for this value
+  (see an example below). Either this or `EbNo_values` is required.
+* `EbNo_values {...}` - Eb/No SNR values to simulate at. Group value, each item contains single SNR value.
+  Either this or `SNR_val_trn` is required.
+* `min_trials_per_snr` - minimum number of trials that should be simulated for each SNR value. Default is 1.
+* `min_errors_per_snr` - minimum number of errors that should be observed for each SNR value. Default is 1.
 * `random_codeword on|off` - Use random information sequence for every simulation trial or not.
  Boolean. Off by default.
 * `ml_lb on|off` - Estimate ML lower bound or not. Boolean. Off by default.
 
-Example:
+Typical use case is to set `EbNo_values` together with `min_trials_per_snr` and `min_errors_per_snr`:
+```
+res_file result.spf
+EbNo_values { -0.5 -0.25 0 0.25 0.5 0.75 1 1.25 1.5 1.75 2 }
+min_trials_per_snr 20000
+min_errors_per_snr 100
+random_codeword on
+ml_lb off
+```
+
+Another option is to set the number of trials for each SNR value with `SNR_val_trn`:
 ```
 res_file result.spf
 SNR_val_trn {
-   1      50000
+   1      20000
    1.25   50000
-   1.5    50000
+   1.5    100000
 }
 random_codeword on
 ml_lb off
