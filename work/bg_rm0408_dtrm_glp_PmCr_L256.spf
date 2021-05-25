@@ -1,0 +1,20 @@
+% Code parameters.
+include codes/rm/rm0408.txt
+
+% Decoder settings
+border_node_lsize 256
+include codes/rm/rm0408_PmCr.txt
+
+% Results file.
+res_file results/bg_rm0408_dtrm_glp_PmCr_L256.srf
+
+% Basic simulation parameters.
+EbNo_values { 0 0.25 0.5 0.75 1 1.25 1.5 1.75 2 2.25 2.5 2.75 3 3.25 3.5 }
+min_trials_per_snr 40000
+min_errors_per_snr 400
+
+% Use random codeword for simulation (on/off).
+random_codeword on
+
+% Calculate ML lower bound (on/off).
+ml_lb on
