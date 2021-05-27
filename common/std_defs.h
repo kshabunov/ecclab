@@ -34,6 +34,7 @@
 
 // General math
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 // Float / double
 #define FLOAT_EPS 1e-10
