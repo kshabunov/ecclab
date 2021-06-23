@@ -27,7 +27,7 @@ This will build the executables and copy them to the `work` subdirectory.
 
 To build from command line with `make` run it in the project root directory.
 It will build executables to the `work` subdirectory.
-The provided makefile uses `gcc`, but it can be replaced with any other C compiler.
+The provided makefile uses `gcc,` but it can be replaced with any other C compiler.
 
 ## Running
 
@@ -179,15 +179,15 @@ permutations {
 ```
 
 ### `ca_polar_scl_bg`
-Simulate Successive Cancellation List (SCL) decoding for CRC-aided (CA) Polar codes, AWGN channel.
+Simulate Successive Cancellation List (SCL) decoding for pure Polar and CRC-aided (CA) Polar codes, AWGN channel.
 This is `dtrm_glp` codec tailored for Polar codes. The difference is that we start only from (m, m) nodes
 and decompose everything down to (0, 0) nodes. When no CRC is given, the decoder outputs the remaining candidate
 with the best metric as `dtrm_glp` would do. When CRC is set, the decoder picks the best candidate with the correct CRC.
 
 Specific simulation parameters:
 * `c_m m` - Polar m parameter. Integer, positive, non-zero. Required.
-* `info_bits_mask mask_str` - mask marking frozen information bits
- in the same way as `border_node_mask` marks zeroed border nodes for `dtrm_glp`. Binary string. Required.
+* `info_bits_mask mask_str` - binary mask marking frozen information bits
+ in the same way as `border_node_mask` marks zeroed border nodes for `dtrm_glp.` Binary string. Required.
 * `ca_polar_crc poly_str` - coefficients of the CRC polynomial starting from higher powers, no leading 1.
 Binary string. No CRC is used by default.
 * `list_size L` - list size. Integer, positive, non-zero. Required.

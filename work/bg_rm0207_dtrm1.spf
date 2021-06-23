@@ -4,20 +4,10 @@ include codes/rm/rm0207.txt
 % Results file.
 res_file results/bg_rm0207_dtrm1.srf
 
-% SNR values to simulate at.
-SNR_val_trn {
-   0      10000
-   0.5    10000
-   1      10000
-   1.5    10000
-   2      10000
-   2.5    20000
-   3      40000
-   3.5    100000
-   4      200000
-   4.5    500000
-   5      1000000
-}
+% Basic simulation parameters.
+EbNo_values { -1 -0.5 0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5 }
+min_trials_per_snr 20000
+min_errors_per_snr 400
 
 % Use random codeword for simulation (on/off).
 random_codeword on

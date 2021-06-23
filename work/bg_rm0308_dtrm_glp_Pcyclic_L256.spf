@@ -1,0 +1,20 @@
+% Code parameters.
+include codes/rm/rm0308.txt
+
+% Decoder settings
+border_node_lsize 256
+include codes/rm/p08cyclic.txt
+
+% Results file.
+res_file results/bg_rm0308_dtrm_glp_Pcyclic_L256.srf
+
+% Basic simulation parameters.
+SNR { -1 -0.75 -0.5 -0.25 0 0.25 0.5 0.75 1 1.25 1.5 1.75 2 2.25 2.5 }
+min_trials_per_snr 40000
+min_errors_per_snr 200
+
+% Use random codeword for simulation (on/off).
+random_codeword on
+
+% Calculate ML lower bound (on/off).
+ml_lb on
