@@ -31,10 +31,6 @@
 #include "../common/srm_utils.h"
 #include "../formats/formats.h"
 
-#ifndef FORMAT_EPS
-#error Works only in eps format.
-#endif
-
 //-----------------------------------------------------------------------------
 // Internal defines.
 
@@ -78,58 +74,39 @@ tri0_dec(
 
    // RM(0, m) case.
    if (r == 0) {
-
       (*x_dec_len) = 1; // one information bit.
-
-#ifdef FORMAT_EPS4_H
       p1 = 0.0;
       for (i = 0; i < n; i++) {
-         p1 += y_in[i];
+         p1 += EST2LLR(y_in[i]);
       }
-      if (p1 < 0.0) {
-#else // FORMAT_EPS4_H
-      p1 = 1.0;
-      p2 = 1.0;
-      for (i = 0; i < n; i++) {
-         p1 *= 1.0 - y_in[i];
-         p2 *= 1.0 + y_in[i];
-      }
-      if (p1 > p2) {
-#endif // else FORMAT_EPS4_H
-         x_dec[0] = 1;
-         for (i = 0; i < n; i++) y_dec[i] = -1.0;
+      if (p1 > 0.0) {
+         x_dec[0] = 0;
+         for (i = 0; i < n; i++) y_dec[i] = YLDEC0;
       }
       else {
-         x_dec[0] = 0;
-         for (i = 0; i < n; i++) y_dec[i] = 1.0;
+         x_dec[0] = 1;
+         for (i = 0; i < n; i++) y_dec[i] = YLDEC1;
       }
-
       return 0;
-
-   } // if (r == 0).
+   }
 
    // RM(m, m) case.
    if (r == m) {
-
       int tmp[1024];
-
       (*x_dec_len) = n; // n information bits.
-
       for (i = 0; i < n; i++) {
-         if (y_in[i] > 0) {
+         if (CHECK_EST0(y_in[i])) {
             tmp[i] = 0;
-            y_dec[i] = 1.0;
+            y_dec[i] = YLDEC0;
          }
          else {
             tmp[i] = 1;
-            y_dec[i] = -1.0;
+            y_dec[i] = YLDEC1;
          }
       }
       mrm_enc_mm_bsc(m, tmp, x_dec);
-
       return 0;
-
-   } // if (r == m).
+   }
 
    // Further reduction.
 
@@ -140,8 +117,7 @@ tri0_dec(
    y_dec2 = y_dec + n2;
 
    // Decode u1.
-   // [x_dec1, y_dec1] = dtrm00_she(r - 1, m - 1, y1 .* y2);
-   for (i = 0; i < n2; i++) aux_buf[i] = y1[i] * y2[i];
+   VXOR_EST(y1, y2, aux_buf, n2);
    tri0_dec(
       aux_buf, r - 1, m - 1, n2,
       y_dec1, x_dec, &cur_x_dec_len, aux_buf + n2
@@ -149,10 +125,8 @@ tri0_dec(
    (*x_dec_len) = cur_x_dec_len;
 
    // Decode u2.
-   // [x_dec2, y_dec2] = dtrm00_she(r, m - 1, add_est_eps(y1 .* y_dec1, y2, n2));
-   for (i = 0; i < n2; i++) y1[i] *= y_dec1[i];
+   for (i = 0; i < n2; i++) y1[i] = EST_XOR_YLDEC(y1[i], y_dec[i]);
    VADD_EST(y1, y2, aux_buf, n2);
-   // ADD_EST_EPS(y1, y2, aux_buf, n2);
    tri0_dec(
       aux_buf, r, m - 1, n2,
       y_dec2, x_dec + cur_x_dec_len, &cur_x_dec_len, aux_buf + n2

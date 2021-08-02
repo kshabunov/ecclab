@@ -33,7 +33,7 @@
 #include "../rm1_ml/rm1_ml.h"
 
 #ifndef FORMAT_EPS
-#error Works only in eps format.
+#warning Works only in eps format.
 #endif
 
 //-----------------------------------------------------------------------------

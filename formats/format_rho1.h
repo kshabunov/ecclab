@@ -62,6 +62,9 @@
 // EST0_TO_LNP1(y) - EST0_TO_LNP0(y).
 #define EST0_ADD_LNP1_SUB_LNP0(y) (-(y))
 
+// Convert estimate to log likelihood ratio.
+#define EST2LLR(e) (e)
+
 #define XOR_EST(y1, y2) log((1.0 + exp((y1) + (y2))) / (exp(y1) + exp(y2)))
 //#define XOR_EST_ZZ(y1, y2) log((1.0 + exp((y1) + (y2))) / (exp(y1) + exp(y2)))
 //#define XOR_EST_PP(y1, y2) ((y1) + (y2))

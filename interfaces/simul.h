@@ -1,5 +1,5 @@
 //=============================================================================
-// Simulation interface.
+// Simulation driver interface.
 //
 // Copyright 2001 and onwards Kirill Shabunov
 //
