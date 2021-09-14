@@ -29,4 +29,8 @@ target_compile_options(dtrm_glp_bg PUBLIC -DDEC_NEEDS_SIGMA -DDEC_NEEDS_CSNRN)
 add_executable(ca_polar_scl_bg polar_scl/ca_polar_scl_main.c polar_scl/polar_scl_inner.c ${SIM_SRM_BG})
 target_compile_options(ca_polar_scl_bg PUBLIC -DDEC_NEEDS_SIGMA)
 
+add_executable(test_ca_polar_scl tests/test_ca_polar_scl.c polar_scl/ca_polar_scl_main.c polar_scl/polar_scl_inner.c common/srm_utils.c ${SPF} ${UI_TXT})
+target_compile_options(test_ca_polar_scl PUBLIC -DDEC_NEEDS_SIGMA)
+add_test(ca_polar_scl test_ca_polar_scl)
+
 INSTALL(TARGETS dtrm0_bg dtrm1_bg dtrm_glp_bg ca_polar_scl_bg DESTINATION ${CMAKE_SOURCE_DIR}/work)
