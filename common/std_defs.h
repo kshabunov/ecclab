@@ -29,6 +29,11 @@
 //-----------------------------------------------------------------------------
 // Defines
 
+
+// Common return codes
+#define RC_OK 0
+#define RC_ERROR (-1)
+
 // Memory
 #define CHK_FREE(p) {if ((p) != NULL) { free(p); (p) = NULL; }}
 

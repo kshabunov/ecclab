@@ -26,6 +26,9 @@
 // #define DEC_NEEDS_SIGMA
 // #define DEC_NEEDS_CSNRN
 
+// Decoder extra return codes
+#define RC_DEC_ERASURE 1
+
 //-----------------------------------------------------------------------------
 // Prototypes.
 
