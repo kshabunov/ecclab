@@ -90,6 +90,8 @@ typedef struct {
   int en_bl_saved[SNR_NUM_MAX];
   int do_ml; // If 1 evaluate ML LB.
   int do_ml_hd; // If 1 evaluate ML LB for hard dec. decoder.
+  int trn_ml[SNR_NUM_MAX];
+  int trn_ml_saved[SNR_NUM_MAX];
   int enml_bl[SNR_NUM_MAX];
   int enml_bl_saved[SNR_NUM_MAX];
 } sim_bg_inst;
@@ -381,9 +383,10 @@ int sim_run(
       copy_add_noise(c_in, c_n, noise_sg, c_out);
 
       // Decode.
-      if (dec_bpsk(sim->dc_inst, c_out, x_dec)) {
+      int rc = dec_bpsk(sim->dc_inst, c_out, x_dec);
+      if (rc == RC_ERROR) {
         err_msg("sim_bg run error: error while decoding.");
-        return -1;
+        return RC_ERROR;
       }
 
       // Count the number of incorrect information bits.
@@ -396,7 +399,8 @@ int sim_run(
       }
 
       // Check if the ML decoding would fail too.
-      if (sim->do_ml) {
+      if (sim->do_ml && rc != RC_DEC_ERASURE) {
+        sim->trn_ml[csnrn]++;
         double d1 = 0.0, d2 = 0.0;
         if (sim->do_ml_hd)
           for (i = 0; i < c_n; i++) c_out[i] = (c_out[i] > 0.0) ? 1.0 : -1.0;
@@ -480,7 +484,7 @@ sim_cur_res_str(
         sim->snr_db[n],
         (double)(sim->en_bit[n]) / (sim->trn[n] * sim->code_k),
         (double)(sim->en_bl[n]) / sim->trn[n],
-        (double)(sim->enml_bl[n]) / sim->trn[n]
+        sim->trn_ml[n] ? (double)(sim->enml_bl[n]) / sim->trn_ml[n] : 0
       );
       strcat(ds, str1);
     }
@@ -611,7 +615,7 @@ sim_save_res(
       en_bit[n] += sim->en_bit[i] - sim->en_bit_saved[i];
       en_bl[n] += sim->en_bl[i] - sim->en_bl_saved[i];
       if (sim->do_ml) {
-        ml_trn[n] += sim->trn[i] - sim->trn_saved[i];
+        ml_trn[n] += sim->trn_ml[i] - sim->trn_ml_saved[i];
         enml_bl[n] += sim->enml_bl[i] - sim->enml_bl_saved[i];
       }
     }
@@ -623,16 +627,12 @@ sim_save_res(
     snrs_to_save = (sim->csnrn < sim->snr_num) ? sim->csnrn + 1 : sim->snr_num;
     for (n = 0; n < snrs_to_save; n++) {
       snr_db[n] = sim->snr_db[n];
-      trn[n] = sim->trn[n] - sim->trn_saved[n];
-      sim->trn_saved[n] = sim->trn[n];
-      en_bit[n] = sim->en_bit[n] - sim->en_bit_saved[n];
-      sim->en_bit_saved[n] = sim->en_bit[n];
-      en_bl[n] = sim->en_bl[n] - sim->en_bl_saved[n];
-      sim->en_bl_saved[n] = sim->en_bl[n];
+      trn[n] = sim->trn[n];
+      en_bit[n] = sim->en_bit[n];
+      en_bl[n] = sim->en_bl[n];
       if (sim->do_ml) {
-        ml_trn[n] = trn[n];
-        enml_bl[n] = sim->enml_bl[n] - sim->enml_bl_saved[n];
-        sim->enml_bl_saved[n] = sim->enml_bl[n];
+        ml_trn[n] = sim->trn_ml[n];
+        enml_bl[n] = sim->enml_bl[n];
       }
       else {
         ml_trn[n] = 0;
@@ -644,6 +644,7 @@ sim_save_res(
     sim->trn_saved[i] = sim->trn[i];
     sim->en_bit_saved[i] = sim->en_bit[i];
     sim->en_bl_saved[i] = sim->en_bl[i];
+    sim->trn_ml_saved[i] = sim->trn_ml[i];
     sim->enml_bl_saved[i] = sim->enml_bl[i];
   }
 

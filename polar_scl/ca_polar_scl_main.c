@@ -163,7 +163,7 @@ int get_best_in_list(
     return 0;
   }
 
-  best_ind = 0;
+  best_ind = -1;
   for (i = 0; i < lsiz; i++) {
     curx = x + i * sum_len;
     tmp = malloc_calc_crc(curx, x_len, crc, crc_len, tmp);
@@ -401,7 +401,7 @@ cdc_init(
 
    (*cdc) = dd;
 
-   return 0;
+   return RC_OK;
 
 ret_err:
 
@@ -414,7 +414,7 @@ ret_err:
       free(dd);
       (*cdc) = NULL;
    }
-   return 1;
+   return RC_ERROR;
 }
 
 void
@@ -441,7 +441,7 @@ int cdc_get_n(void *cdc)
 {
    cdc_inst_type *dd;
 
-   if (cdc == NULL) return 0;
+   if (cdc == NULL) return RC_ERROR;
    dd = (cdc_inst_type *)cdc;
    return dd->c_n;
 }
@@ -450,7 +450,7 @@ int cdc_get_k(void *cdc)
 {
    cdc_inst_type *dd;
 
-   if (cdc == NULL) return 0;
+   if (cdc == NULL) return RC_ERROR;
    dd = (cdc_inst_type *)cdc;
    return dd->eff_k;
 }
@@ -483,7 +483,7 @@ enc_bpsk(
       x_crc = (int *)malloc(dd->c_k * sizeof(int));
       if (x_crc == NULL) {
          err_msg("enc_bpsk: Short of memory.");
-         return -1;
+         return RC_ERROR;
       }
       memcpy(x_crc, x, dd->eff_k * sizeof(int));
       add_crc(x, dd->eff_k, dd->crc, dd->crc_len, x_crc + dd->eff_k);
@@ -512,8 +512,8 @@ dec_bpsk(
    int *x_candidates;
    uint8 *mem_buf, *mem_buf_ptr;
    int mem_buf_size;
-   int i, j, best_ind;
-   double d1;
+   int best_ind;
+   int is_erasure = 0;
 
    dd = (cdc_inst_type *)cdc;
 
@@ -524,7 +524,7 @@ dec_bpsk(
    mem_buf = (uint8 *)malloc(mem_buf_size);
    if (mem_buf == NULL) {
       err_msg("dec_bpsk: Short of memory.");
-      return -1;
+      return RC_ERROR;
    }
    mem_buf_ptr = mem_buf;
 
@@ -537,7 +537,7 @@ dec_bpsk(
    }
 
    // dec_input <-- 2 * c_out / sg^2.
-   for (i = 0; i < dd->c_n; i++) dec_input[i] = c_out[i] * dd->sg22;
+   for (int i = 0; i < dd->c_n; i++) dec_input[i] = c_out[i] * dd->sg22;
 
    if (dd->dc.ret_list) {
       polar_dec(&(dd->dc), dec_input, x_candidates, NULL);
@@ -545,6 +545,10 @@ dec_bpsk(
 #ifdef DBG
       printf("best_ind: %d\n", best_ind);
 #endif
+      if (best_ind < 0) {
+        is_erasure = 1;
+        best_ind = 0;
+      }
       memcpy(x_dec, x_candidates + best_ind * dd->c_k, dd->eff_k * sizeof(int));
    }
    else {
@@ -553,5 +557,5 @@ dec_bpsk(
 
    free(mem_buf);
 
-   return 0;
+   return is_erasure ? RC_DEC_ERASURE : RC_OK;
 }
