@@ -182,7 +182,10 @@ permutations {
 Simulate Successive Cancellation List (SCL) decoding for pure Polar and CRC-aided (CA) Polar codes, AWGN channel.
 This is `dtrm_glp` codec tailored for Polar codes. The difference is that we start only from (m, m) nodes
 and decompose everything down to (0, 0) nodes. When no CRC is given, the decoder outputs the remaining candidate
-with the best metric as `dtrm_glp` would do. When CRC is set, the decoder picks the best candidate with the correct CRC.
+with the best metric as `dtrm_glp` would do.
+When CRC is set, the decoder function picks the best candidate with the correct CRC and returns `RC_OK.`
+If there is no candidate with correct CRC in the list, the decoder function returns `RC_DEC_ERASURE` and
+the candidate with the best metric.
 
 Specific simulation parameters:
 * `c_m m` - Polar m parameter. Integer, positive, non-zero. Required.
