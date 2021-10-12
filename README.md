@@ -81,7 +81,7 @@ group_param {
 * `EbNo_values {...}` - Eb/No SNR values to simulate at. Group value, each item contains single SNR value.
   Either this or `SNR_val_trn` is required.
 * `min_trials_per_snr` - minimum number of trials that should be simulated for each SNR value. Default is 1.
-* `min_errors_per_snr` - minimum number of errors that should be observed for each SNR value. Default is 1.
+* `min_errors_per_snr` - minimum number of errors per block that should be observed for each SNR value. Default is 1.
 * `random_codeword on|off` - Use random information sequence for every simulation trial or not.
  Boolean. Off by default.
 * `ml_lb on|off` - Estimate ML lower bound or not. Boolean. Off by default.
@@ -205,6 +205,36 @@ In order to be able to switch between different representations a system of macr
 The related source code is located in the `formats` subdirectory.
 There is the top level include file `formats.h` and a number of `format_*.h` sub-include files
 specific for each representation.
+
+## Octave / Matlab
+
+Though I tried to keep the code portable between Octave/Matlab, I used it only in Octave,
+so no guarantee it will run in Matlab.
+
+### `loadsrf`
+
+This is a MEX function that loads the data from a simulation results file to an Octave scalar structure variable
+with the following fields:
+* `n` - codeword length.
+* `k` - information block length.
+* `EbNo` - Eb/No SNR values array.
+* `BER` - bit error rate values array.
+* `WER` - word error rate values array.
+* `MLER` - ML lower bound values array. It will contain zeroes for SNR points where the bound was not calculated.
+
+All array fields have the same length.
+Error rate values correspond to Eb/No values with the same array index.
+Thus, you should be able to plot the data as follows:
+```Matlab
+data = loadsrf('path/to/file.srf');
+semilogy(data.EbNo, data.WER, data.EbNo, data.MLER);
+```
+
+It can be compiled by running the following command in Octave/Matlab from the `Octave` subdirectory:
+```Matlab
+mex ./loadsrf.c ./ui_octave_txt.c ../common/spf_par.c
+```
+
 
 ## References
 * E. Arikan, “Channel Polarization: A Method for Constructing Capacity-Achieving Codes for Symmetric Binary-Input Memoryless Channels,”
