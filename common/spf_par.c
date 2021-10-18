@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "std_defs.h"
 #include "spf_par.h"
 #include "../interfaces/ui_utils.h"
 
@@ -46,6 +47,7 @@ char SNR_token[] = "SNR";
 char tr_num_token[] = "tr_num";
 char en_bit_token[] = "en_bit";
 char en_bl_token[] = "en_bl";
+char er_n_token[] = "erasures_num";
 char ml_tr_num_token[] = "ml_tr_num";
 char enml_bl_token[] = "enml_bl";
 
@@ -54,9 +56,6 @@ char enml_bl_token[] = "enml_bl";
 //-----------------------------------------------------------------------------
 // Functions.
 
-// Copy parameters string from sstr to dstr.
-// While copying remove comments.
-// Return: resulting string length.
 int
 strcpy_strip_comments(
    char sstr[], // Source string.
@@ -90,7 +89,7 @@ strcpy_strip_comments(
 }
 
 // Open, read and preparse simulation parameters file to sp_str.
-// Return: 0 - OK, !0 - error.
+// Return: RC_OK/RC_ERROR.
 int
 spf_read_preparse_ext(
    char spf_name[], // Simulation parameters file name.
@@ -105,26 +104,26 @@ spf_read_preparse_ext(
    // Read simulation parameters file to str1.
    if ((sp_file = fopen(spf_name, "rb")) == NULL) {
       if (try_flag != 1) err_msg("spf_read_preparse(): can't open file.");
-      return 1;
+      return RC_ERROR;
    }
    str1 = (char *)malloc(SP_STR_MAX * 3);
    if (str1 == NULL) {
       err_msg("spf_read_preparse(): short of memory.");
       fclose(sp_file);
-      return 1;
+      return RC_ERROR;
    }
    str2 = str1 + SP_STR_MAX;
    if ((i1 = fread(str1, 1, SP_STR_MAX, sp_file)) == 0) {
       err_msg("spf_read_preparse(): can't read file.");
       free(str1);
       fclose(sp_file);
-      return 1;
+      return RC_ERROR;
    }
    fclose(sp_file);
    if (i1 >= SP_STR_MAX) {
       err_msg("spf_read_preparse(): file is too huge.");
       free(str1);
-      return 1;
+      return RC_ERROR;
    }
    str1[i1] = 0;
 
@@ -133,7 +132,7 @@ spf_read_preparse_ext(
    if (sp_str == NULL) {
       err_msg("spf_read_preparse(): short of memory!");
       free(str1);
-      return 1;
+      return RC_ERROR;
    }
    sp_str_len = 0;
    sp_str[0] = 0;
@@ -153,14 +152,14 @@ spf_read_preparse_ext(
             err_msg("spf_read_preparse(): can't open include file.");
             free(sp_str);
             free(str1);
-            return 1;
+            return RC_ERROR;
          }
          if ((i1 = fread(str1, 1, SP_STR_MAX, sp_file)) == 0) {
             err_msg("spf_read_preparse(): can't read include file.");
             fclose(sp_file);
             free(sp_str);
             free(str1);
-            return 1;
+            return RC_ERROR;
          }
          fclose(sp_file);
          str1[i1] = 0;
@@ -169,7 +168,7 @@ spf_read_preparse_ext(
             err_msg("spf_read_preparse(): file is too huge.");
             free(sp_str);
             free(str1);
-            return 1;
+            return RC_ERROR;
          }
          // Insert the file instead of the include command.
          memmove(token + strlen(token) + 1 + i1, token + strlen(token) + 1, str2_len + 1);
@@ -223,11 +222,9 @@ spf_read_preparse_ext(
    free(str1);
    (*out_str) = sp_str;
 
-   return 0;
+   return RC_OK;
 }
 
-// Open, read and preparse simulation parameters file to sp_str.
-// Return: 0 - OK, !0 - error.
 int
 spf_read_preparse(
    char spf_name[], // Simulation parameters file name.
@@ -236,13 +233,43 @@ spf_read_preparse(
    return spf_read_preparse_ext(spf_name, out_str, 0);
 }
 
-// Try to open, read and preparse simulation parameters file to sp_str.
-// Return: 0 - OK, !0 - error.
 int
 spf_tryread_preparse(
    char spf_name[], // Simulation parameters file name.
    char **out_str // Simulation parameters string.
 ) {
    return spf_read_preparse_ext(spf_name, out_str, 1);
+}
+
+int tryread_group_int_param(
+  char **inout_tk,
+  char *param_key,
+  int *x,
+  size_t step_size,
+  int *n,
+  int max_n,
+  char *erstr
+) {
+  if (strcmp(*inout_tk, param_key) == 0) {
+    int i = 0;
+    char *tk = strtok(NULL, tk_seps_prepared);
+    if (tk[0] == GROUP_CHAR_BEGIN) {
+      tk = strtok(NULL, tk_seps_prepared);
+      while ((tk[0] != GROUP_CHAR_END) && (i < max_n)) {
+        *x = atoi(tk);
+        x = (int *)((uint8_t *)x + step_size);
+        tk = strtok(NULL, tk_seps_prepared);
+        i++;
+      }
+    }
+    else {
+      err_msg(erstr);
+      return RC_ERROR;
+    }
+    *n = i;
+    *inout_tk = strtok(NULL, tk_seps_prepared);
+    return RC_OK;
+  }
+  return RC_SPF_UNKNOWN;
 }
 

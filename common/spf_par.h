@@ -39,6 +39,8 @@
 // This character is used to separate tokens in processed params string.
 #define TOKEN_SEP_CHAR     '\1'
 
+#define RC_SPF_UNKNOWN (RC_CUSTOM + 1)
+
 #define TRYGET_INT_TOKEN(tk, tk_samp, x) { \
    if (strcmp((tk), (tk_samp)) == 0) { \
       (tk) = strtok(NULL, tk_seps_prepared); \
@@ -61,27 +63,6 @@
    if (strcmp((tk), (tk_samp)) == 0) { \
       (tk) = strtok(NULL, tk_seps_prepared); \
       (x) = (!strcmp(tk, switch_on_token)) ? 1 : 0; \
-      (tk) = strtok(NULL, tk_seps_prepared); \
-      continue; \
-   } \
-}
-
-#define TRYGET_GRINT_TOKEN(tk, tk_samp, x, n, nmax, erstr) { \
-   if (strcmp((tk), (tk_samp)) == 0) { \
-      int i = 0; \
-      (tk) = strtok(NULL, tk_seps_prepared); \
-      if ((tk)[0] == GROUP_CHAR_BEGIN) { \
-         (tk) = strtok(NULL, tk_seps_prepared); \
-         while (((tk)[0] != GROUP_CHAR_END) && (i < (nmax))) { \
-            (x)[i++] = atoi(tk); \
-            (tk) = strtok(NULL, tk_seps_prepared); \
-         } \
-      } \
-      else { \
-         err_msg(erstr); \
-         return 1; \
-      } \
-      (n) = i; \
       (tk) = strtok(NULL, tk_seps_prepared); \
       continue; \
    } \
@@ -166,6 +147,7 @@ extern char SNR_token[];
 extern char tr_num_token[];
 extern char en_bit_token[];
 extern char en_bl_token[];
+extern char er_n_token[];
 extern char ml_tr_num_token[];
 extern char enml_bl_token[];
 
@@ -174,29 +156,51 @@ extern char enml_bl_token[];
 //-----------------------------------------------------------------------------
 // Prototypes.
 
-// Copy parameters string from sstr to dstr without comments.
-int
-strcpy_strip_comments(
+/**
+ * Copy parameters string from sstr to dstr. Remove comments while copying.
+ * @return resulting string length
+ */
+int strcpy_strip_comments(
    char sstr[], // Source string.
    int sstr_len, // Source string length.
    int write_term_flag, // if 1 - write 0 at the end.
    char dstr[] // destination string.
 );
 
-// Open, read and preparse simulation parameters file to sp_str.
-// Return: 0 - OK, !0 - error.
-int
-spf_read_preparse(
+/**
+ * Open, read and preparse simulation parameters file to sp_str.
+ * @param spf_name
+ * @param out_str
+ * @return RC_OK / RC_ERROR
+ */
+int spf_read_preparse(
    char spf_name[], // Simulation parameters file name.
    char **out_str // Simulation parameters string.
 );
 
-// Try to open, read and preparse simulation parameters file to sp_str.
-// Return: 0 - OK, !0 - error.
-int
-spf_tryread_preparse(
+/**
+ * Try to open, read and preparse simulation parameters file to sp_str.
+ * @param spf_name
+ * @param out_str
+ * @return RC_OK / RC_ERROR
+ */
+int spf_tryread_preparse(
    char spf_name[], // Simulation parameters file name.
    char **out_str // Simulation parameters string.
+);
+
+/**
+ * Try to read a group int parameter.
+ * @return RC_OK / RC_SPF_UNKNOWN / RC_ERROR
+ */
+int tryread_group_int_param(
+  char **inout_tk,
+  char *param_key,
+  int *x, // output array
+  size_t step_size, // x step size (e.g. sizeof(int) for a plain int array)
+  int *n, // number of read items
+  int max_n,
+  char *erstr
 );
 
 #endif // #ifndef SPF_PAR_H

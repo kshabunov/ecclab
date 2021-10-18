@@ -220,6 +220,7 @@ with the following fields:
 * `EbNo` - Eb/No SNR values array.
 * `BER` - bit error rate values array.
 * `WER` - word error rate values array.
+* `ERR` - erasure rate values array.
 * `MLER` - ML lower bound values array. It will contain zeroes for SNR points where the bound was not calculated.
 
 All array fields have the same length.

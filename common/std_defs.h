@@ -33,6 +33,7 @@
 // Common return codes
 #define RC_OK 0
 #define RC_ERROR (-1)
+#define RC_CUSTOM 16
 
 // Memory
 #define CHK_FREE(p) {if ((p) != NULL) { free(p); (p) = NULL; }}

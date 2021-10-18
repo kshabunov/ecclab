@@ -26,6 +26,8 @@
 //-----------------------------------------------------------------------------
 // Includes.
 
+#include "../common/std_defs.h"
+
 //-----------------------------------------------------------------------------
 // Defines
 
@@ -33,6 +35,8 @@
 #define SIM_CTRL_CUR_MORE     1
 #define SIM_CTRL_CUR_LESS     2
 #define SIM_CTRL_CUR_NEXT     3
+
+#define RC_SIMUL_NOT_COMPLETED (RC_CUSTOM + 1)
 
 //-----------------------------------------------------------------------------
 // Typedefs.

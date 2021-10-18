@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "../common/std_defs.h"
 #include "../interfaces/ui_utils.h"
 #include "../interfaces/simul.h"
 
@@ -59,7 +60,7 @@ int main(int argc, char **argv) {
       msg_printf("   -nr - don't randomize.\n");
       msg_printf("   -si <int> - saving interval in sec. (default %d).\n", DEFAULT_SAVE_INT);
       msg_printf("   -ri <int> - return interval in sec. (default %d).\n", DEFAULT_RET_INT);
-      return 0;
+      return RC_ERROR;
    }
 
    memset(&sp, 0, sizeof(sim_init_params));
@@ -80,9 +81,9 @@ int main(int argc, char **argv) {
 #endif // if WIN32
 
    // Init simulation instance.
-   if (sim_init(&sp, &sim_inst)) {
+   if (sim_init(&sp, &sim_inst) != RC_OK) {
       err_msg("Can't initialize simulation instance.");
-      return -1;
+      return RC_ERROR;
    }
 
    show_msg("Simulation start.");
@@ -90,7 +91,7 @@ int main(int argc, char **argv) {
    time(&start_time);
 
    // Call simulation procedure.
-   while ((rc = sim_run(sim_inst)) > 0) {
+   while ((rc = sim_run(sim_inst)) == RC_SIMUL_NOT_COMPLETED) {
 #ifdef WIN32
       if (_kbhit()) {
          ch1 = _getch();
@@ -130,5 +131,5 @@ int main(int argc, char **argv) {
 
    sim_close(sim_inst);
 
-   return 0;
+   return RC_OK;
 }
