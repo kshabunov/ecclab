@@ -117,7 +117,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     return;
   }
 
-  res = mxCreateStructMatrix(1, 1, 6, keys);
+  res = mxCreateStructMatrix(1, 1, sizeof(keys) / sizeof(char *), keys);
 
   mxSetFieldByNumber(res, 0, 0, mxCreateDoubleScalar(c_n));
   mxSetFieldByNumber(res, 0, 1, mxCreateDoubleScalar(c_k));
