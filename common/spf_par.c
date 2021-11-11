@@ -257,7 +257,7 @@ int tryread_group_int_param(
       tk = strtok(NULL, tk_seps_prepared);
       while ((tk[0] != GROUP_CHAR_END) && (i < max_n)) {
         *x = atoi(tk);
-        x = (int *)((uint8_t *)x + step_size);
+        x = (int *)((unsigned char *)x + step_size);
         tk = strtok(NULL, tk_seps_prepared);
         i++;
       }

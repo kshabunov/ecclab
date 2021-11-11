@@ -17,11 +17,11 @@ This is a set of tools for research work in progress, no formal releases are pla
 The simulation programs are written in C.
 
 To build from command line with `CMake`proceed as follows starting from the project root directory:
-```
-mkdir cmake-build-release
-cd cmake-build-release
+```Shell
+mkdir build
+cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build . --target install
+cmake --build . --target install --config Release
 ```
 This will build the executables and copy them to the `work` subdirectory.
 
