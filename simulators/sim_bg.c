@@ -717,7 +717,7 @@ sim_save_res(
   fprintf(fp, "}\n");
 
   fprintf(fp, "\n");
-  fprintf(fp, "%% SNR   BER         WER         ERR         ML LB");
+  fprintf(fp, "%% SNR   BER        WER        ERR        ML LB");
   for (n = 0; n < snrs_to_save; n++) {
     fprintf(fp,
       "\n%% %3.2f  %.3e  %.3e  %.3e  %.3e",
