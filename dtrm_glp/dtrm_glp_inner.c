@@ -94,6 +94,7 @@ int frindp; // frind pointer. Points to the next available element.
 xlist_item *next_xle_ptr; // pointer to the next available xlist element
 
 xlitem *xtmp;
+xlitem *xtmp2;
 
 
 //-----------------------------------------------------------------------------
@@ -474,7 +475,6 @@ void rmm_branch(
   int cur_ind0, cur_ind1;
   xlist_item *cur_xl0;
   ylitem y1, ym, ym2, ym3;
-  xlitem xtmp2[n];
   ylitem *yp1, *yp3;
   slitem s1, s2, s3;
   int i, j, i1, i2, i3;
@@ -807,6 +807,9 @@ rm_dec(
   mem_buf_ptr += flsiz * sizeof(int);
 
   xtmp = (xlitem *)mem_buf_ptr;
+  mem_buf_ptr += c_n * sizeof(xlitem);
+
+  xtmp2 = (xlitem *)mem_buf_ptr;
   mem_buf_ptr += c_n * sizeof(xlitem);
 
 #ifdef DBG2

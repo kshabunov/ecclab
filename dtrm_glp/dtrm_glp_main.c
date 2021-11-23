@@ -75,6 +75,7 @@ int get_membuf_size(decoder_type *dd) {
    mem_buf_size += flsiz * sizeof(slitem); // slist
    mem_buf_size += flsiz * sizeof(int); // plist.
    mem_buf_size += dd->c_n * sizeof(xlitem); // xtmp.
+   mem_buf_size += dd->c_n * sizeof(xlitem); // xtmp2.
    mem_buf_size += flsiz * sizeof(int); // parent.
 
    return mem_buf_size;
