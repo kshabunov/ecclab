@@ -26,10 +26,13 @@ target_compile_options(dtrm1_bg PUBLIC -DDEC_NEEDS_SIGMA)
 add_executable(dtrm_glp_bg dtrm_glp/dtrm_glp_main.c dtrm_glp/dtrm_glp_inner.c ${SIM_SRM_BG})
 target_compile_options(dtrm_glp_bg PUBLIC -DDEC_NEEDS_SIGMA -DDEC_NEEDS_CSNRN)
 
-add_executable(ca_polar_scl_bg polar_scl/ca_polar_scl_main.c polar_scl/polar_scl_inner.c ${SIM_SRM_BG})
+add_executable(test_crc tests/test_crc.c common/crc.c)
+add_test(crc test_crc)
+
+add_executable(ca_polar_scl_bg polar_scl/ca_polar_scl_main.c polar_scl/polar_scl_inner.c common/crc.c ${SIM_SRM_BG})
 target_compile_options(ca_polar_scl_bg PUBLIC -DDEC_NEEDS_SIGMA)
 
-add_executable(test_ca_polar_scl tests/test_ca_polar_scl.c polar_scl/ca_polar_scl_main.c polar_scl/polar_scl_inner.c common/srm_utils.c ${SPF} ${UI_TXT})
+add_executable(test_ca_polar_scl tests/test_ca_polar_scl.c polar_scl/ca_polar_scl_main.c polar_scl/polar_scl_inner.c common/crc.c common/srm_utils.c ${SPF} ${UI_TXT})
 target_compile_options(test_ca_polar_scl PUBLIC -DDEC_NEEDS_SIGMA)
 add_test(ca_polar_scl test_ca_polar_scl)
 

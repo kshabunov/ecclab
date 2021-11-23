@@ -28,6 +28,7 @@
 #include "../interfaces/codec.h"
 #include "../common/spf_par.h"
 #include "../interfaces/ui_utils.h"
+#include "../common/crc.h"
 #include "../common/srm_utils.h"
 #include "polar_scl_inner.h"
 
@@ -47,7 +48,7 @@ typedef struct {
    int c_n; // Code length.
    int c_k; // Code dimension.
    int eff_k; // Effective code dimension (without CRC).
-   int c_m; // RM m.
+   int c_m; // Polar m.
    int *crc;
    int crc_len;
    int csnrn;
@@ -92,61 +93,6 @@ int get_k_from_node_table(
   return k;
 }
 
-int *malloc_calc_crc(
-  int *x,
-  int x_len,
-  int *crc,
-  int crc_len,
-  int *tmp
-) {
-  int i, j;
-
-  if (tmp == NULL) {
-    tmp = (int *)malloc(x_len * sizeof(int));
-    if (tmp == NULL) {
-      return NULL;
-    }
-  }
-
-  memcpy(tmp, x, x_len * sizeof(int));
-  //memset(tmp + x_len, 0, crc_len * sizeof(int));
-
-  for (i = 0; i < x_len - crc_len; i++) {
-    if (tmp[i]) {
-      for (j = 0; j < crc_len; j++) {
-        tmp[i + j + 1] ^= crc[j];
-      }
-    }
-  }
-
-  return tmp;
-}
-
-int add_crc(
-  int *x,
-  int x_len,
-  int *crc,
-  int crc_len,
-  int *check
-) {
-  int *tmp;
-
-  if (crc_len <= 0) {
-    return 0;
-  }
-
-  tmp = malloc_calc_crc(x, x_len, crc, crc_len, NULL);
-  if (tmp == NULL) {
-    return -1;
-  }
-
-  memcpy(check, tmp + x_len - crc_len, crc_len * sizeof(int));
-
-  free(tmp);
-
-  return 0;
-}
-
 int get_best_in_list(
   int *x,
   int x_len,
@@ -154,38 +100,25 @@ int get_best_in_list(
   int *crc,
   int crc_len
 ) {
-  int *curx, *tmp = NULL;
-  int s, best_ind;
-  int sum_len = x_len + crc_len;
-  int i, j;
-
   if (crc_len <= 0) {
     return 0;
   }
-
-  best_ind = -1;
-  for (i = 0; i < lsiz; i++) {
-    curx = x + i * sum_len;
-    tmp = malloc_calc_crc(curx, x_len, crc, crc_len, tmp);
+  else {
+    int sum_len = x_len + crc_len;
+    int i;
+    int *tmp = (int *)malloc(x_len * sizeof(int));
     if (tmp == NULL) {
       return 0;
     }
-    s = 0;
-    for (j = 0; j < crc_len; j++) {
-      s += curx[x_len + j] ^ tmp[x_len - crc_len + j];
-#ifdef DBG
-      printf("i: %d, s: %d\n", i, s);
-#endif
+    for (i = 0; i < lsiz; i++) {
+      if (is_valid_crc(x + i * sum_len, x_len, crc, crc_len, tmp)) {
+        free(tmp);
+        return i;
+      }
     }
-    if (s == 0) {
-      best_ind = i;
-      break;
-    }
+    free(tmp);
+    return -1; // no candidates with valid CRC found
   }
-
-  free(tmp);
-
-  return best_ind;
 }
 
 #ifdef DBG
@@ -272,7 +205,7 @@ cdc_init(
          continue;
       }
       if (strcmp(token, "permutations") == 0) {
-         // TODO: Permutations are not usable with general Polar, but let's leave it here for now.
+         // TODO: Permutations that were used for RM codes are not usable with Polar, but let's leave it here for now.
          if (c_m == 0) {
             err_msg("cdc_init(): parameters file: c_m must be specified before permutations.");
             goto ret_err;
@@ -485,12 +418,8 @@ enc_bpsk(
          err_msg("enc_bpsk: Short of memory.");
          return RC_ERROR;
       }
+      calc_crc(x, dd->eff_k, dd->crc, dd->crc_len, x_crc + dd->crc_len);
       memcpy(x_crc, x, dd->eff_k * sizeof(int));
-      add_crc(x, dd->eff_k, dd->crc, dd->crc_len, x_crc + dd->eff_k);
-#ifdef DBG
-      print_bin_vect("Input x", x, dd->eff_k);
-      print_bin_vect("Input x with crc", x_crc, dd->c_k);
-#endif
       smrm_par0_enc_bpsk(dd->c_m, dd->c_m, dd->dc.node_table, x_crc, y);
       free(x_crc);
       return dd->eff_k;
