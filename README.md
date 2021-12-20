@@ -241,7 +241,8 @@ mex ./loadsrf.c ./ui_octave_txt.c ../common/spf_par.c
 * E. Arikan, “Channel Polarization: A Method for Constructing Capacity-Achieving Codes for Symmetric Binary-Input Memoryless Channels,”
  IEEE Transactions on Information Theory, vol. 55, no. 7, July 2009. [IEEE Xplore](https://ieeexplore.ieee.org/document/5075875)
 * I. Dumer, K. Shabunov, "Soft-decision decoding of Reed-Muller codes: Recursive lists",
- IEEE Transactions On Information Theory, vol. 52, no. 3, March 2006. [IEEE Xplore](https://ieeexplore.ieee.org/document/1603792)
+ IEEE Transactions On Information Theory, vol. 52, no. 3, March 2006.
+ [IEEE Xplore](https://ieeexplore.ieee.org/document/1603792), [arXiv](https://arxiv.org/abs/1703.05305)
 * I. Dumer, K. Shabunov, "Recursive and permutation decoding for Reed-Muller codes",
  Proc. 2002 IEEE Int. Symp. Inform. Theory, pp. 146, 2002. [IEEE Xplore](https://ieeexplore.ieee.org/document/1023418)
 * I. Dumer, K. Shabunov, "Near-optimum decoding for subcodes of Reed-Muller codes",

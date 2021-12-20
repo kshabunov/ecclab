@@ -154,7 +154,7 @@ spf_read_preparse_ext(
             free(str1);
             return RC_ERROR;
          }
-         if ((i1 = fread(str1, 1, SP_STR_MAX, sp_file)) == 0) {
+         if ((i1 = fread(str1, 1, SP_STR_MAX - 1, sp_file)) == 0) {
             err_msg("spf_read_preparse(): can't read include file.");
             fclose(sp_file);
             free(sp_str);
@@ -162,6 +162,7 @@ spf_read_preparse_ext(
             return RC_ERROR;
          }
          fclose(sp_file);
+         str1[i1++] = ' ';
          str1[i1] = 0;
          i1 = strcpy_strip_comments(str1, i1, 1, str1);
          if (i1 + str2_len >= SP_STR_MAX) {
